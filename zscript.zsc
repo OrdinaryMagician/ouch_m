@@ -1,0 +1,211 @@
+version "2.4"
+
+class OhGodWhy : EventHandler
+{
+	int tickcount;
+	CVar ouch_level, ouch_faces, ouch_psprites, ouch_actors, ouch_nausea, ouch_drunk, ouch_scream;
+
+	override void WorldLoaded( WorldEvent e )
+	{
+		ouch_level = CVar.GetCVar('ouch_level');
+		ouch_faces = CVar.GetCVar('ouch_faces');
+		ouch_psprites = CVar.GetCVar('ouch_psprites');
+		ouch_actors = CVar.GetCVar('ouch_actors');
+		ouch_drunk = CVar.GetCVar('ouch_drunk');
+		ouch_nausea = CVar.GetCVar('ouch_nausea');
+		ouch_scream = CVar.GetCVar('ouch_scream');
+		tickcount = 0;
+		int i;
+		if ( ouch_faces.GetBool() )
+		{
+			ThinkerIterator aa = ThinkerIterator.Create("Actor");
+			Actor a;
+			while ( a = Actor(aa.Next()) )
+			{
+				if ( a.CheckClass("OuchFace",AAPTR_DEFAULT,true) ) continue;
+				for ( i=0; i<3; i++ ) a.Spawn("OuchFace",a.pos);
+			}
+		}
+		if ( !ouch_level.GetBool() ) return;
+		TextureID thetex;
+		Line l;
+		Sector s;
+		thetex = TexMan.CheckForTexture("STFOUCH0",TexMan.Type_Any);
+		if ( int(thetex) == -1 ) return; // no texture available
+		int j, k;
+		for ( i=0; i<level.Lines.Size(); i++ )
+		{
+			l = level.Lines[i];
+			for ( j=0; j<3; j++ ) for ( k=0; k<2; k++ ) if ( l.sidedef[k] && l.sidedef[k].GetTexture(j) && (l.sidedef[k].GetTexture(j) != skyflatnum) ) l.sidedef[k].SetTexture(j,thetex);
+		}
+		for ( i=0; i<level.Sectors.Size(); i++ )
+		{
+			s = level.Sectors[i];
+			for ( j=0; j<2; j++ ) if ( level.Sectors[i].GetTexture(j) && (level.Sectors[i].GetTexture(j) != skyflatnum) ) level.Sectors[i].SetTexture(j,thetex);
+			s.flags |= Sector.SECF_FRICTION;
+		}
+		thetex = TexMan.CheckForTexture("OUCHSKY",TexMan.Type_Any);
+		if ( int(thetex) == -1 ) return; // no texture available
+		level.ChangeSky(thetex,thetex);
+	}
+
+	override void WorldTick()
+	{
+		if ( ouch_nausea.GetBool() )
+		{
+			Line l;
+			Sector s;
+			int i, j;
+			for ( i=0; i<level.Lines.Size(); i++ )
+			{
+				l = level.Lines[i];
+				for ( j=0; j<3; j++ )
+				{
+					l.sidedef[0].SetTextureXOffset(j,FRandom[Ouch](-256.0,256.0));
+					l.sidedef[0].SetTextureYOffset(j,FRandom[Ouch](-256.0,256.0));
+					l.sidedef[0].SetTextureXScale(j,FRandom[Ouch](-4.0,4.0));
+					l.sidedef[0].SetTextureYScale(j,FRandom[Ouch](-4.0,4.0));
+					if ( level.Lines[i].sidedef[1] )
+					{
+						l.sidedef[1].SetTextureXOffset(j,FRandom[Ouch](-256.0,256.0));
+						l.sidedef[1].SetTextureYOffset(j,FRandom[Ouch](-256.0,256.0));
+						l.sidedef[1].SetTextureXScale(j,FRandom[Ouch](-4.0,4.0));
+						l.sidedef[1].SetTextureYScale(j,FRandom[Ouch](-4.0,4.0));
+					}
+				}
+			}
+			int echochance = Random[Ouch](0,10);
+			for ( i=0; i<level.Sectors.Size(); i++ )
+			{
+				s = level.Sectors[i];
+				for ( j=0; j<2; j++ )
+				{
+					s.SetXOffset(j,FRandom[Ouch](-256.0,256.0));
+					s.SetYOffset(j,FRandom[Ouch](-256.0,256.0));
+					s.SetXScale(j,FRandom[Ouch](-4.0,4.0));
+					s.SetYScale(j,FRandom[Ouch](-4.0,4.0));
+					s.SetAngle(j,FRandom[Ouch](0.0,360.0));
+					s.SetColor(Color(Random[Ouch](160,255),Random[Ouch](160,255),Random[Ouch](160,255),Random[Ouch](160,255)),0);
+				}
+				if ( tickcount%3 ) continue;
+				if ( echochance < 3 ) s.SetEnvironmentID(65535);
+				else s.SetEnvironmentID(0);
+				s.friction = FRandom[Ouch](0.9,1.1);
+			}
+		}
+		ThinkerIterator aa = ThinkerIterator.Create("Actor");
+		Actor a;
+		while ( a = Actor(aa.Next()) )
+		{
+			if ( a.CheckClass("OuchFace",AAPTR_DEFAULT,true) )
+			{
+				if ( !ouch_faces.GetBool() ) a.Destroy();
+				continue; // ouch faces do their own thing
+			}
+			if ( !(tickcount%3) && (Random[Ouch](0,10) < 3) && ouch_scream.GetBool() ) a.A_PlaySound("ouch/dspdiehi",CHAN_5,FRandom[Ouch](0.05,0.3));
+			if ( a.bNOSECTOR || a.bNOCLIP || a.bINVISIBLE ) continue; // prevent breakage of some things
+			if ( a.player && ouch_psprites.GetBool() )
+			{
+				for ( PSprite psp = a.player.psprites; psp; psp=psp.next )
+				{
+					if ( psp.sprite == a.GetSpriteIndex('TNT1') ) continue;
+					psp.sprite = a.GetSpriteIndex('OUCH');
+					psp.frame = 1;
+				}
+			}
+			if ( a.CheckClass("PlayerPawn",AAPTR_DEFAULT,true) )
+			{
+				if ( !(tickcount%10) && ouch_nausea.GetBool() ) a.A_QuakeEx(Random[Ouch](0,4),Random[Ouch](0,4),Random[Ouch](0,4),5,0,100,"");
+				if ( ouch_drunk.GetBool() )
+				{
+					a.A_SetAngle(a.angle+cos(gametic*5.4356)*0.54+sin(gametic*4.3314)*0.93,SPF_INTERPOLATE);
+					a.A_SetPitch(a.pitch+cos(gametic*7.8436)*0.72+sin(gametic*6.5272)*0.64,SPF_INTERPOLATE);
+					a.A_SetRoll(cos(gametic*6.3143)*18.48+sin(gametic*4.2563)*15.66,SPF_INTERPOLATE);
+				}
+				else a.A_SetRoll(0);
+				if ( a.health > 0 ) continue;
+			}
+			if ( a.sprite != a.GetSpriteIndex('TNT1') )
+			{
+				// view-dependant, but who cares, it won't desync
+				Vector2 base = (1.0,1.0);
+				if ( ouch_actors.GetBool() )
+				{
+					base = TexMan.GetScaledSize(a.CurState.GetSpriteTexture(a.spriteRotation));
+					base.x /= 24.0;
+					base.y /= 31.0;
+					a.sprite = a.GetSpriteIndex('OUCH');
+					a.frame = 0;
+					// helpers so you can tell what is what
+					if ( a.bISMONSTER ) a.A_SetTranslation('OuchEnemy');
+					else if ( a is 'RedCard' || a is 'RedSkull' ) a.A_SetTranslation('OuchRedKey');
+					else if ( a is 'BlueCard' || a is 'BlueSkull' ) a.A_SetTranslation('OuchBlueKey');
+					else if ( a is 'YellowCard' || a is 'YellowSkull' ) a.A_SetTranslation('OuchYellowKey');
+					else if ( a is 'Ammo' || a is 'Weapon' ) a.A_SetTranslation('OuchAmmo');
+					else if ( a is 'Health' ) a.A_SetTranslation('OuchHealth');
+					else if ( a is 'Armor' ) a.A_SetTranslation('OuchArmor');
+					else if ( a is 'Inventory' ) a.A_SetTranslation('OuchMiscItem');
+					else a.A_SetTranslation('OuchOther');
+				}
+				if ( ouch_nausea.GetBool() ) a.A_SetScale(base.x*FRandom[Ouch](0.8,1.2),base.y*FRandom[Ouch](0.8,1.2));
+				else if ( ouch_actors.GetBool() ) a.A_SetScale(base.x,base.y);
+			}
+			if ( !(tickcount%10) && ouch_nausea.GetBool() ) a.A_ChangeVelocity(a.vel.x+FRandom[Ouch](-1.0,1.0),a.vel.y+FRandom[Ouch](-1.0,1.0),a.vel.z+FRandom[Ouch](-10.0,10.0));
+		}
+		if ( ouch_nausea.GetBool() )
+		{
+			level.skyspeed1 = FRandom[Ouch](-128.0,128.0);
+			level.skyspeed2 = FRandom[Ouch](-128.0,128.0);
+		}
+		else
+		{
+			level.skyspeed1 = 0.0;
+			level.skyspeed2 = 0.0;
+		}
+		tickcount++;
+	}
+}
+
+Class OuchFace : Actor
+{
+	int screamtimer, tickcount;
+	double basescale;
+	CVar ouch_scream;
+	CVar ouch_nausea;
+
+	override void Tick()
+	{
+		if ( screamtimer-- <= 0 )
+		{
+			if ( ouch_scream.GetBool() ) A_PlaySound("ouch/dspdiehi",CHAN_5,FRandom[Ouch](0.05,0.3));
+			screamtimer = Random[Ouch](1,10);
+		}
+		tickcount++;
+		if ( !(tickcount%8) ) A_ChangeVelocity(vel.x+FRandom[Ouch](-10.0,10.0),vel.y+FRandom[Ouch](-10.0,10.0),vel.z+FRandom[Ouch](-20.0,20.0));
+		if ( ouch_nausea.GetBool() ) A_SetScale(basescale*FRandom[Ouch](0.75,1.5),basescale*FRandom[Ouch](0.75,1.5));
+		Super.Tick();
+	}
+
+	override void PostBeginPlay()
+	{
+		screamtimer = 0;
+		tickcount = Random[Ouch](0,100);
+		ouch_scream = CVar.GetCVar('ouch_scream');
+		ouch_nausea = CVar.GetCVar('ouch_nausea');
+		basescale = FRandom[Ouch](0.1,2.0);
+	}
+
+	Default
+	{
+		Radius 8;
+		Height 16;
+		+NOBLOCKMAP
+		+DROPOFF
+	}
+	States
+	{
+	Spawn:
+		OUCH A -1;
+		Stop;
+	}
+}

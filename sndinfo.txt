@@ -1,0 +1,2 @@
+ouch/dspdiehi	DSPDIEHI
+$pitchshift	ouch/dspdiehi	6

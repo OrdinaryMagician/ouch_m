@@ -1,0 +1,18 @@
+OptionMenu "OuchMenu"
+{
+	Title "ouch_m Options"
+
+	Option "Retexture Player Sprites", "ouch_psprites", "YesNo"
+	Option "Retexture Actors (requires restart)", "ouch_actors", "YesNo"
+	Option "Retexture Level (requires restart)", "ouch_level", "YesNo"
+	Option "DSPDIEHI", "ouch_scream", "YesNo"
+	Option "Bouncing Faces (respawn requires restart)", "ouch_faces", "YesNo"
+	Option "Vomitorium", "ouch_nausea", "YesNo"
+	Option "Drunk Camera", "ouch_drunk", "YesNo"
+}
+
+AddOptionMenu "OptionsMenu"
+{
+	StaticText " "
+	Submenu "ouch_m Options", "OuchMenu"
+}
