@@ -103,7 +103,6 @@ class OhGodWhy : EventHandler
 				continue; // ouch faces do their own thing
 			}
 			if ( !(tickcount%3) && (Random[Ouch](0,10) < 3) && ouch_scream.GetBool() ) a.A_PlaySound("ouch/dspdiehi",CHAN_5,FRandom[Ouch](0.05,0.3));
-			if ( a.bNOSECTOR || a.bNOCLIP || a.bINVISIBLE ) continue; // prevent breakage of some things
 			if ( a.player && ouch_psprites.GetBool() )
 			{
 				for ( PSprite psp = a.player.psprites; psp; psp=psp.next )
@@ -150,6 +149,7 @@ class OhGodWhy : EventHandler
 				if ( ouch_nausea.GetBool() ) a.A_SetScale(base.x*FRandom[Ouch](0.8,1.2),base.y*FRandom[Ouch](0.8,1.2));
 				else if ( (ouch_actors.GetInt() == 1) || ((ouch_actors.GetInt() == 2) && !a.bISMONSTER) ) a.A_SetScale(base.x,base.y);
 			}
+			if ( (a.sprite == a.GetSpriteIndex('TNT1')) || a.bNOSECTOR || a.bNOCLIP || a.bINVISIBLE ) continue; // prevent breakage of some things
 			if ( !(tickcount%10) && ouch_nausea.GetBool() ) a.A_ChangeVelocity(a.vel.x+FRandom[Ouch](-1.0,1.0),a.vel.y+FRandom[Ouch](-1.0,1.0),a.vel.z+FRandom[Ouch](-10.0,10.0));
 		}
 		if ( ouch_nausea.GetBool() )

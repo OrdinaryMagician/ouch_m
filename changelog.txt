@@ -1,5 +1,9 @@
 1.0 "ZScript was a mistake"
-  - Public release
+  - Public release.
 
 1.0.1
-  - Added option to exclude monsters from retexture
+  - Added option to exclude monsters from retexture.
+
+1.0.2
+  - A lot of other actors should get retextured now.
+    They won't be shaken around, though, to prevent breaking things.
