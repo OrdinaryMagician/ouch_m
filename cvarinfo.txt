@@ -1,5 +1,5 @@
 server bool ouch_psprites = true;
-server bool ouch_actors = true;
+server int ouch_actors = 1;
 server bool ouch_level = true;
 server bool ouch_scream = true;
 server bool ouch_faces = true;

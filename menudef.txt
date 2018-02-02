@@ -1,12 +1,19 @@
+OptionValue "OuchActors"
+{
+	0, "None"
+	1, "All"
+	2, "No monsters"
+}
+
 OptionMenu "OuchMenu"
 {
 	Title "ouch_m Options"
 
 	Option "Retexture Player Sprites", "ouch_psprites", "YesNo"
-	Option "Retexture Actors (requires restart)", "ouch_actors", "YesNo"
-	Option "Retexture Level (requires restart)", "ouch_level", "YesNo"
+	Option "Retexture Actors (req. restart)", "ouch_actors", "OuchActors"
+	Option "Retexture Level (req. restart)", "ouch_level", "YesNo"
 	Option "DSPDIEHI", "ouch_scream", "YesNo"
-	Option "Bouncing Faces (respawn requires restart)", "ouch_faces", "YesNo"
+	Option "Bouncing Faces (req. restart)", "ouch_faces", "YesNo"
 	Option "Vomitorium", "ouch_nausea", "YesNo"
 	Option "Drunk Camera", "ouch_drunk", "YesNo"
 }

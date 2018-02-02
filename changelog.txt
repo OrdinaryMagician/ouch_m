@@ -1,0 +1,5 @@
+1.0 "ZScript was a mistake"
+  - Public release
+
+1.0.1
+  - Added option to exclude monsters from retexture

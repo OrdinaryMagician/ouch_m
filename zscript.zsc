@@ -129,7 +129,7 @@ class OhGodWhy : EventHandler
 			{
 				// view-dependant, but who cares, it won't desync
 				Vector2 base = (1.0,1.0);
-				if ( ouch_actors.GetBool() )
+				if ( (ouch_actors.GetInt() == 1) || ((ouch_actors.GetInt() == 2) && !a.bISMONSTER) )
 				{
 					base = TexMan.GetScaledSize(a.CurState.GetSpriteTexture(a.spriteRotation));
 					base.x /= 24.0;
@@ -148,7 +148,7 @@ class OhGodWhy : EventHandler
 					else a.A_SetTranslation('OuchOther');
 				}
 				if ( ouch_nausea.GetBool() ) a.A_SetScale(base.x*FRandom[Ouch](0.8,1.2),base.y*FRandom[Ouch](0.8,1.2));
-				else if ( ouch_actors.GetBool() ) a.A_SetScale(base.x,base.y);
+				else if ( (ouch_actors.GetInt() == 1) || ((ouch_actors.GetInt() == 2) && !a.bISMONSTER) ) a.A_SetScale(base.x,base.y);
 			}
 			if ( !(tickcount%10) && ouch_nausea.GetBool() ) a.A_ChangeVelocity(a.vel.x+FRandom[Ouch](-1.0,1.0),a.vel.y+FRandom[Ouch](-1.0,1.0),a.vel.z+FRandom[Ouch](-10.0,10.0));
 		}
