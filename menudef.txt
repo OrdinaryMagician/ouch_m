@@ -16,6 +16,7 @@ OptionMenu "OuchMenu"
 	Option "Bouncing Faces (req. restart)", "ouch_faces", "YesNo"
 	Option "Vomitorium", "ouch_nausea", "YesNo"
 	Option "Drunk Camera", "ouch_drunk", "YesNo"
+	Slider "Faces Per Actor (req. restart)", "ouch_facenum", 1, 10, 1, 0
 }
 
 AddOptionMenu "OptionsMenu"

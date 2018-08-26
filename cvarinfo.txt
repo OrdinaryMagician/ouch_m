@@ -5,3 +5,4 @@ server bool ouch_scream = true;
 server bool ouch_faces = true;
 server bool ouch_nausea = true;
 server bool ouch_drunk = true;
+server int ouch_facenum = 3;

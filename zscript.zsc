@@ -3,7 +3,8 @@ version "2.4"
 class OhGodWhy : EventHandler
 {
 	int tickcount;
-	CVar ouch_level, ouch_faces, ouch_psprites, ouch_actors, ouch_nausea, ouch_drunk, ouch_scream;
+	int facecnt;
+	CVar ouch_level, ouch_faces, ouch_psprites, ouch_actors, ouch_nausea, ouch_drunk, ouch_scream, ouch_facenum;
 
 	override void WorldLoaded( WorldEvent e )
 	{
@@ -14,7 +15,9 @@ class OhGodWhy : EventHandler
 		ouch_drunk = CVar.GetCVar('ouch_drunk');
 		ouch_nausea = CVar.GetCVar('ouch_nausea');
 		ouch_scream = CVar.GetCVar('ouch_scream');
+		ouch_facenum = CVar.GetCVar('ouch_facenum');
 		tickcount = 0;
+		facecnt = 0;
 		int i;
 		if ( ouch_faces.GetBool() )
 		{
@@ -23,7 +26,7 @@ class OhGodWhy : EventHandler
 			while ( a = Actor(aa.Next()) )
 			{
 				if ( a.CheckClass("OuchFace",AAPTR_DEFAULT,true) ) continue;
-				for ( i=0; i<3; i++ ) a.Spawn("OuchFace",a.pos);
+				for ( i=0; i<ouch_facenum.GetInt(); i++ ) a.Spawn("OuchFace",a.pos);
 			}
 		}
 		if ( !ouch_level.GetBool() ) return;

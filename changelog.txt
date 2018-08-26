@@ -7,3 +7,7 @@
 1.0.2
   - A lot of other actors should get retextured now.
     They won't be shaken around, though, to prevent breaking things.
+
+1.0.3
+  - Add slider for setting bouncing faces per actor, to prevent slowdowns
+    in some maps.
