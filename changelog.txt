@@ -14,3 +14,6 @@
 
 1.0.4
   - Fixed broken saving.
+
+1.0.5
+  - Fixed broken loading caused by fixed saving.

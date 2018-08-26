@@ -54,6 +54,14 @@ class OhGodWhy : EventHandler
 
 	override void WorldTick()
 	{
+		if ( !ouch_level ) ouch_level = CVar.GetCVar('ouch_level');
+		if ( !ouch_faces ) ouch_faces = CVar.GetCVar('ouch_faces');
+		if ( !ouch_psprites ) ouch_psprites = CVar.GetCVar('ouch_psprites');
+		if ( !ouch_actors ) ouch_actors = CVar.GetCVar('ouch_actors');
+		if ( !ouch_drunk ) ouch_drunk = CVar.GetCVar('ouch_drunk');
+		if ( !ouch_nausea ) ouch_nausea = CVar.GetCVar('ouch_nausea');
+		if ( !ouch_scream ) ouch_scream = CVar.GetCVar('ouch_scream');
+		if ( !ouch_facenum ) ouch_facenum = CVar.GetCVar('ouch_facenum');
 		if ( ouch_nausea.GetBool() )
 		{
 			Line l;
