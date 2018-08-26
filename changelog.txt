@@ -11,3 +11,6 @@
 1.0.3
   - Add slider for setting bouncing faces per actor, to prevent slowdowns
     in some maps.
+
+1.0.4
+  - Fixed broken saving.
