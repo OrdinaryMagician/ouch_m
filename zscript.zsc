@@ -5,6 +5,7 @@ class OhGodWhy : EventHandler
 	int tickcount;
 	int facecnt;
 	transient CVar ouch_level, ouch_faces, ouch_psprites, ouch_actors, ouch_nausea, ouch_drunk, ouch_scream, ouch_facenum;
+	bool wasdrunk;
 
 	override void WorldLoaded( WorldEvent e )
 	{
@@ -16,8 +17,6 @@ class OhGodWhy : EventHandler
 		ouch_nausea = CVar.GetCVar('ouch_nausea');
 		ouch_scream = CVar.GetCVar('ouch_scream');
 		ouch_facenum = CVar.GetCVar('ouch_facenum');
-		tickcount = 0;
-		facecnt = 0;
 		int i;
 		if ( ouch_faces.GetBool() )
 		{
@@ -34,21 +33,21 @@ class OhGodWhy : EventHandler
 		Line l;
 		Sector s;
 		thetex = TexMan.CheckForTexture("STFOUCH0",TexMan.Type_Any);
-		if ( int(thetex) == -1 ) return; // no texture available
+		if ( thetex.IsNull() || !thetex.IsValid() ) return; // no texture available
 		int j, k;
 		for ( i=0; i<level.Lines.Size(); i++ )
 		{
 			l = level.Lines[i];
-			for ( j=0; j<3; j++ ) for ( k=0; k<2; k++ ) if ( l.sidedef[k] && l.sidedef[k].GetTexture(j) && (l.sidedef[k].GetTexture(j) != skyflatnum) ) l.sidedef[k].SetTexture(j,thetex);
+			for ( j=0; j<3; j++ ) for ( k=0; k<2; k++ ) if ( l.sidedef[k] && !l.sidedef[k].GetTexture(j).IsNull() && (l.sidedef[k].GetTexture(j) != skyflatnum) ) l.sidedef[k].SetTexture(j,thetex);
 		}
 		for ( i=0; i<level.Sectors.Size(); i++ )
 		{
 			s = level.Sectors[i];
-			for ( j=0; j<2; j++ ) if ( level.Sectors[i].GetTexture(j) && (level.Sectors[i].GetTexture(j) != skyflatnum) ) level.Sectors[i].SetTexture(j,thetex);
+			for ( j=0; j<2; j++ ) if ( !level.Sectors[i].GetTexture(j).IsNull() && (level.Sectors[i].GetTexture(j) != skyflatnum) ) level.Sectors[i].SetTexture(j,thetex);
 			s.flags |= Sector.SECF_FRICTION;
 		}
 		thetex = TexMan.CheckForTexture("OUCHSKY",TexMan.Type_Any);
-		if ( int(thetex) == -1 ) return; // no texture available
+		if ( thetex.IsNull() || !thetex.IsValid() ) return; // no texture available
 		level.ChangeSky(thetex,thetex);
 	}
 
@@ -129,22 +128,30 @@ class OhGodWhy : EventHandler
 				if ( !(tickcount%10) && ouch_nausea.GetBool() ) a.A_QuakeEx(Random[Ouch](0,4),Random[Ouch](0,4),Random[Ouch](0,4),5,0,100,"");
 				if ( ouch_drunk.GetBool() )
 				{
+					wasdrunk = true;
 					a.A_SetAngle(a.angle+cos(gametic*5.4356)*0.54+sin(gametic*4.3314)*0.93,SPF_INTERPOLATE);
 					a.A_SetPitch(a.pitch+cos(gametic*7.8436)*0.72+sin(gametic*6.5272)*0.64,SPF_INTERPOLATE);
 					a.A_SetRoll(cos(gametic*6.3143)*18.48+sin(gametic*4.2563)*15.66,SPF_INTERPOLATE);
 				}
-				else a.A_SetRoll(0);
+				else if ( wasdrunk )
+				{
+					a.A_SetRoll(0);
+					wasdrunk = false;
+				}
 				if ( a.health > 0 ) continue;
 			}
 			if ( a.sprite != a.GetSpriteIndex('TNT1') )
 			{
-				// view-dependant, but who cares, it shouldn't desync
 				Vector2 base = (1.0,1.0);
 				if ( (ouch_actors.GetInt() == 1) || ((ouch_actors.GetInt() == 2) && !a.bISMONSTER) )
 				{
+					// view-dependant, but who cares, it shouldn't desync
 					base = TexMan.GetScaledSize(a.CurState.GetSpriteTexture(a.spriteRotation));
 					base.x /= 24.0;
 					base.y /= 31.0;
+					Vector2 defscale = GetDefaultByType(a.GetClass()).scale;
+					base.x *= defscale.x;
+					base.y *= defscale.y;
 					a.sprite = a.GetSpriteIndex('OUCF');
 					a.frame = 0;
 					// helpers so you can tell what is what
@@ -204,7 +211,6 @@ Class OuchMFace : Actor
 	{
 		ouch_scream = CVar.GetCVar('ouch_scream');
 		ouch_nausea = CVar.GetCVar('ouch_nausea');
-		screamtimer = 0;
 		tickcount = Random[Ouch](0,100);
 		basescale = FRandom[Ouch](0.1,2.0);
 	}

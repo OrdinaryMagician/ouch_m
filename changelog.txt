@@ -21,3 +21,8 @@
 1.0.6
   - Patched up sprite and class name conflicts with abort_m, added some
     compat stuff. Now they can be combined.
+
+1.0.7
+  - Make roll reset to 0 only once after disabling drunk camera, fixes compat
+    with any mods that do roll adjustments of their own.
+  - Minor fixes.
