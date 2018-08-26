@@ -17,3 +17,7 @@
 
 1.0.5
   - Fixed broken loading caused by fixed saving.
+
+1.0.6
+  - Patched up sprite and class name conflicts with abort_m, added some
+    compat stuff. Now they can be combined.

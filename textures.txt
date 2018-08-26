@@ -8,13 +8,13 @@ Graphic "OUCHSKY", 24, 31
 	Patch "STFOUCH0", 0, 0
 }
 
-Sprite "OUCHA0", 24, 31
+Sprite "OUCFA0", 24, 31
 {
 	Offset 12, 30
 	Patch "STFOUCH0", 0, 0
 }
 
-Sprite "OUCHB0", 24, 31
+Sprite "OUCFB0", 24, 31
 {
 	XScale 0.400
 	YScale 0.500

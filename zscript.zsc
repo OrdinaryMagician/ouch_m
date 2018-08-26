@@ -25,8 +25,8 @@ class OhGodWhy : EventHandler
 			Actor a;
 			while ( a = Actor(aa.Next()) )
 			{
-				if ( a.CheckClass("OuchFace",AAPTR_DEFAULT,true) ) continue;
-				for ( i=0; i<ouch_facenum.GetInt(); i++ ) a.Spawn("OuchFace",a.pos);
+				if ( a is "OuchMFace" ) continue;
+				for ( i=0; i<ouch_facenum.GetInt(); i++ ) a.Spawn("OuchMFace",a.pos);
 			}
 		}
 		if ( !ouch_level.GetBool() ) return;
@@ -108,22 +108,23 @@ class OhGodWhy : EventHandler
 		Actor a;
 		while ( a = Actor(aa.Next()) )
 		{
-			if ( a.CheckClass("OuchFace",AAPTR_DEFAULT,true) )
+			if ( a.sprite == a.GetSpriteIndex('OUCH') ) continue; // abort_m ouch faces are unaffected by this
+			if ( a is "OuchMFace" )
 			{
 				if ( !ouch_faces.GetBool() ) a.Destroy();
 				continue; // ouch faces do their own thing
 			}
 			if ( !(tickcount%3) && (Random[Ouch](0,10) < 3) && ouch_scream.GetBool() ) a.A_PlaySound("ouch/dspdiehi",CHAN_5,FRandom[Ouch](0.05,0.3));
-			if ( a.player && ouch_psprites.GetBool() )
+			if ( a.player && ouch_psprites.GetBool() && (!a.player.ReadyWeapon || (a.player.ReadyWeapon.GetClassName() != "OuchWeapon")) ) // ouch weapon is unaffected too
 			{
-				for ( PSprite psp = a.player.psprites; psp; psp=psp.next )
+				for ( PSprite psp=a.player.psprites; psp; psp=psp.next )
 				{
 					if ( psp.sprite == a.GetSpriteIndex('TNT1') ) continue;
-					psp.sprite = a.GetSpriteIndex('OUCH');
+					psp.sprite = a.GetSpriteIndex('OUCF');
 					psp.frame = 1;
 				}
 			}
-			if ( a.CheckClass("PlayerPawn",AAPTR_DEFAULT,true) )
+			if ( a is "PlayerPawn" )
 			{
 				if ( !(tickcount%10) && ouch_nausea.GetBool() ) a.A_QuakeEx(Random[Ouch](0,4),Random[Ouch](0,4),Random[Ouch](0,4),5,0,100,"");
 				if ( ouch_drunk.GetBool() )
@@ -144,7 +145,7 @@ class OhGodWhy : EventHandler
 					base = TexMan.GetScaledSize(a.CurState.GetSpriteTexture(a.spriteRotation));
 					base.x /= 24.0;
 					base.y /= 31.0;
-					a.sprite = a.GetSpriteIndex('OUCH');
+					a.sprite = a.GetSpriteIndex('OUCF');
 					a.frame = 0;
 					// helpers so you can tell what is what
 					if ( a.bISMONSTER ) a.A_SetTranslation('OuchEnemy');
@@ -177,7 +178,7 @@ class OhGodWhy : EventHandler
 	}
 }
 
-Class OuchFace : Actor
+Class OuchMFace : Actor
 {
 	int screamtimer, tickcount;
 	double basescale;
@@ -218,7 +219,7 @@ Class OuchFace : Actor
 	States
 	{
 	Spawn:
-		OUCH A -1;
+		OUCF A -1;
 		Stop;
 	}
 }
